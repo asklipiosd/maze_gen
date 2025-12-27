@@ -12,7 +12,7 @@ fn draw_vertical_line(start: Pos) {
 pub async fn display_maze(maze: &Vec<Vec<bool>>) {
     loop {
             clear_background(WHITE);
-            display_maze(maze);
+            display_m(maze).await;
             next_frame().await
         }
 }

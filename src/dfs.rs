@@ -1,4 +1,4 @@
-use crate::{display::display_maze, structs::{self, *}};
+use crate::structs::{self, *};
 use ::rand::random_range;
 use macroquad::prelude::*;
 
@@ -14,7 +14,7 @@ fn random_direction() -> Wall {
 pub fn recursive_backtracker(mut pos: Pos,mut maze: &mut Vec<Vec<bool>>, visited: &mut Vec<Vec<bool>>) {
     let all_true = visited.iter().all(|row| row.iter().all(|&cell| cell));
     if all_true {
-        display_maze(maze);
+        return;
     }
 
     else if visited.get(pos.y).and_then(|row| row.get(pos.x+1)).copied().unwrap_or(false)

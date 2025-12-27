@@ -18,10 +18,10 @@ pub enum Wall {
 }
 impl Pos {
     pub fn get_by_indx(pos: Pos,maze: Vec<Vec<bool>>) -> Cell{
-        let mut north: bool;
-        let mut south: bool;
-        let mut west: bool;
-        let mut east: bool;
+        let north: bool;
+        let south: bool;
+        let west: bool;
+        let east: bool;
         if pos.y == 0 {
             north = maze[pos.y][pos.x]; //north1
             south = maze[pos.y + 2][pos.x]; //north1

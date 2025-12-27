@@ -3,7 +3,6 @@ mod dfs;
 mod display;
 
 use display::display_maze;
-use dfs::*;
 use structs::*;
 use macroquad::prelude::*;
 
@@ -18,5 +17,6 @@ async fn main() {
             vec![true; cols]
         })
     .collect();
-    dfs::recursive_backtracker(Pos { x: (0), y: (0) },&mut maze, &mut visited_cells);
+    //dfs::recursive_backtracker(Pos { x: (0), y: (0) },&mut maze, &mut visited_cells);
+    display_maze(&maze).await;
 }
