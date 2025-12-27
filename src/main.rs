@@ -1,13 +1,11 @@
 mod structs;
 mod dfs;
+mod display;
 
+use display::display_maze;
 use dfs::*;
 use structs::*;
 use macroquad::prelude::*;
-
-pub fn draw_simple_line(start: Pos, end: Pos) {
-    draw_line(start.x as f32, start.y as f32, end.x as f32, end.y as f32, 2.0, BLACK);
-}
 
 #[macroquad::main("BasicShapes")]
 async fn main() {
@@ -20,10 +18,5 @@ async fn main() {
             vec![true; cols]
         })
     .collect();
-    loop {
-        clear_background(WHITE);
-        
-        draw_line(40.0, 40.0, 80.0, 40.0, 2.0, BLACK);
-        next_frame().await
-    }
+    dfs::recursive_backtracker(Pos { x: (0), y: (0) },&mut maze, &mut visited_cells);
 }

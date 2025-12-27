@@ -43,7 +43,7 @@ impl Pos {
         let cell: Cell = Cell { n: (north), s: (south), w: (west), e: (east) };
         cell
     }
-    pub fn remove(pos:Pos, mut maze: Vec<Vec<bool>>, wall: Wall) {
+    pub fn remove(pos:Pos,  maze: &mut Vec<Vec<bool>>, wall: Wall) -> &mut Vec<Vec<bool>> {
         if pos.y == 0 {
             match wall {
                 Wall::North => maze[pos.y][pos.x] = false,
@@ -73,5 +73,6 @@ impl Pos {
                 Wall::East => maze[pos.y+2][pos.x+2] = false,   
             }
         }
+        maze
     }
 }
