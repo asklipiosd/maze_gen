@@ -1,3 +1,6 @@
+use std::error::Error;
+
+use rand::{self, random_range};
 #[derive(Copy, Clone)]
 pub struct Pos {
     pub x: usize,
@@ -9,7 +12,7 @@ pub struct Cell {
     pub w: bool,
     pub e: bool,
 }
-
+#[derive(PartialEq)]
 pub enum Wall {
     North,
     South,
@@ -17,7 +20,7 @@ pub enum Wall {
     East,
 }
 impl Pos {
-    pub fn get_by_indx(pos: Pos,maze: Vec<Vec<bool>>) -> Cell{
+    pub fn get_by_indx(pos: Pos,maze: &mut [Vec<bool>]) -> Cell{
         let north: bool;
         let south: bool;
         let west: bool;
@@ -74,5 +77,19 @@ impl Pos {
             }
         }
         maze
+    }
+}
+
+impl Wall {
+    pub fn random_wall() -> Wall {
+        let choice = random_range(0..3);
+        
+        match choice {
+            0 => Wall::North,
+            1 => Wall::South,
+            2 => Wall::West,
+            3 => Wall::East,
+            _ => unreachable!("x outside valid range: {}", choice),
+        }
     }
 }

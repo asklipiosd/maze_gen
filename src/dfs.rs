@@ -1,64 +1,53 @@
-use crate::{display::display_maze, structs::{self, *}};
-use ::rand::random_range;
+use crate::structs::{self, *};
 use macroquad::prelude::*;
 
-fn random_direction() -> Wall {
-    match random_range(0..4) {
-        0 => Wall::North,
-        1 => Wall::South,
-        2 => Wall::East,
-        _ => Wall::West,
-    }
+fn has_visited(pos: structs::Pos, visited: &mut [Vec<bool>]) -> bool {
+    (pos.x + 1 < visited[0].len() && visited[pos.y][pos.x + 1])
+    || (pos.x > 0 && visited[pos.y][pos.x - 1])
+    || (pos.y + 1 < visited.len() && visited[pos.y + 1][pos.x])
+    || (pos.y > 0 && visited[pos.y - 1][pos.x])
 }
+pub fn recursive_backtracker(mut pos: Pos, maze: &mut Vec<Vec<bool>>, visited: &mut Vec<Vec<bool>>) {
+    let mut has_visited_neighbor = has_visited(pos, visited);
+    
+    let cell = structs::Pos::get_by_indx(pos, maze);
+    visited[pos.y][pos.x] = true;
+    while !has_visited_neighbor {
+        let choice = structs::Wall::random_wall();
+        if 
+            (choice == structs::Wall::North && pos.x + 1 < visited[0].len() && visited[pos.y][pos.x + 1])
+            || (choice == structs::Wall::South && pos.x > 0 && visited[pos.y][pos.x - 1])
+            || (choice == structs::Wall::East && pos.y + 1 < visited.len() && visited[pos.y + 1][pos.x])
+            || (choice == structs::Wall::West && pos.y > 0 && visited[pos.y - 1][pos.x])
+        {continue;}
+        else {
+            match choice {
+                structs::Wall::North => {
+                    pos = structs::Pos{x:pos.x ,y:pos.y + 1};
+                    recursive_backtracker(pos, maze,visited);
+                    structs::Pos::remove(pos, maze, structs::Wall::North);
+                    has_visited_neighbor = has_visited(pos, visited);
+                }
+                structs::Wall::South => {
+                    pos = structs::Pos{x:pos.x ,y:pos.y - 1};
+                    recursive_backtracker(pos, maze,visited);
+                    structs::Pos::remove(pos, maze, structs::Wall::South);
+                    has_visited_neighbor = has_visited(pos, visited);
 
-pub fn recursive_backtracker(mut pos: Pos,mut maze: &mut Vec<Vec<bool>>, visited: &mut Vec<Vec<bool>>) {
-    let all_true = visited.iter().all(|row| row.iter().all(|&cell| cell));
-    if all_true {
-        display_maze(&maze);
-    }
-    else if visited.get(pos.y).and_then(|row| row.get(pos.x+1)).copied().unwrap_or(true/*false*/)
-        || visited.get(pos.y).and_then(|row| row.get(pos.x-1)).copied().unwrap_or(true/*false*/)
-        || visited.get(pos.y + 1).and_then(|row| row.get(pos.x)).copied().unwrap_or(true/*false*/)
-        || visited.get(pos.y - 1).and_then(|row| row.get(pos.x)).copied().unwrap_or(true/*false*/)
-    {}
-    else {
-        visited[pos.y][pos.x] = true;
-        loop {
-            match ::rand::random_range(0..4) {
-                0 => {
-                    if visited.get(pos.y).and_then(|row: &Vec<bool>| row.get(pos.x+1)).copied().unwrap_or(false) {continue;}
-                    else {
-                        maze = structs::Pos::remove(pos, maze, Wall::North);
-                        pos = Pos { x: (pos.x), y: (pos.y + 1) };
-                        break;
-                    }
-                },
-                1 => {
-                    if visited.get(pos.y).and_then(|row: &Vec<bool>| row.get(pos.x-1)).copied().unwrap_or(false) {continue;}
-                    else{
-                        pos = Pos { x: (pos.x), y: (pos.y - 1) };
-                        maze = structs::Pos::remove(pos, maze, Wall::South);
-                        break;
-                    } 
-                },
-                2 => {
-                    if visited.get(pos.y + 1).and_then(|row: &Vec<bool>| row.get(pos.x)).copied().unwrap_or(false) {continue;}
-                    else {
-                        pos = Pos { x: (pos.x + 1), y: (pos.y) };
-                        maze = structs::Pos::remove(pos, maze, Wall::East);
-                        break;
-                    }
-                },
-                _ => {
-                    if visited.get(pos.y-1).and_then(|row: &Vec<bool>| row.get(pos.x)).copied().unwrap_or(false) {continue;}
-                    else {
-                        pos = Pos { x: (pos.x - 1), y: (pos.y) };
-                        maze = structs::Pos::remove(pos, maze, Wall::West);
-                    break;
-                    }
-                },
+                }
+                structs::Wall::West => {
+                    pos = structs::Pos{x:pos.x + 1 ,y:pos.y};
+                    recursive_backtracker(pos, maze,visited);
+                    structs::Pos::remove(pos, maze, structs::Wall::West);
+                    has_visited_neighbor = has_visited(pos, visited);
+                }
+                structs::Wall::East => {
+                    pos = structs::Pos{x:pos.x - 1 ,y:pos.y};
+                    recursive_backtracker(pos, maze,visited);
+                    structs::Pos::remove(pos, maze, structs::Wall::North);
+                    has_visited_neighbor = has_visited(pos, visited);
+                }
             }
         }
-        recursive_backtracker(pos, maze, visited)
     }
 }
